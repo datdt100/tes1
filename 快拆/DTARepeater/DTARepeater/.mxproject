@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/DTA Work_n0827/cube4/DTARepeater/Inc
+HeaderPath=C:/DTA Work_n0827/git/¿ì²ð/DTARepeater/DTARepeater/Inc
 HeaderFiles=gpio.h;can.h;usart.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;iwdg.h;
-SourcePath=C:/DTA Work_n0827/cube4/DTARepeater/Src
+SourcePath=C:/DTA Work_n0827/git/¿ì²ð/DTARepeater/DTARepeater/Src
 SourceFiles=gpio.h;can.h;usart.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;gpio.c;can.c;usart.c;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;iwdg.h;iwdg.c;
 
 [PreviousLibFiles]

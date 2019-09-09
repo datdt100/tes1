@@ -20,16 +20,43 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 extern IWDG_HandleTypeDef hiwdg;
-char	debug_str[100];
 
-void DebugInfo(char *format)
-{
-		while(*format)
-		{
-				HAL_UART_Transmit(&huart3, (uint8_t*)format, 1, 0xffff);
-				format++;
-		}
-}
+#define	DEVICE_CAMERA							1
+#define	DEVICE_YUNTAI							2
+#define	FUNC_CAMERA_STOP					1
+#define	FUNC_CAMERA_FOCUS_NEAR		2
+#define	FUNC_CAMERA_FOCUS_FAR			3
+#define	FUNC_CAMERA_PHOTO					4
+#define	FUNC_CAMERA_RECORD_START	5
+#define	FUNC_CAMERA_RECORD_STOP		6
+#define	FUNC_CAMERA_INIT					7
+#define	FUNC_CAMERA_ZOOM_POS					0x10
+#define	FUNC_CAMERA_EXP_COMP_ON				0x20
+#define	FUNC_CAMERA_EXP_COMP_OFF			0x21
+#define	FUNC_CAMERA_EXP_COMP_RESET		0x22
+#define	FUNC_CAMERA_EXP_COMP_UP				0x23
+#define	FUNC_CAMERA_EXP_COMP_DOWN			0x24
+#define	FUNC_CAMERA_EXP_COMP_DIRECT		0x25
+#define	FUNC_CAMERA_EXP_MONITOR_MODE	0x30		//etc. 1080p/60...
+#define	FUNC_YUNTAI_YAW_PITCH					1
+
+void CameraReset(void);
+void CameraStop(void);
+void CameraFocusNear(void);
+void CameraFocusFar(void);
+void CameraPhoto(void);
+void CameraRecordStart(void);
+void CameraRecordStop(void);
+void CameraRecordInit(void);
+void CameraZoomPos(uint8_t *data, uint8_t len);
+void CameraExpCompOn(void);
+void CameraExpCompOff(void);
+void CameraExpCompReset(void);
+void CameraExpCompUp(void);
+void CameraExpCompDown(void);
+void CameraExpCompDirect(uint8_t *data, uint8_t len);
+void CameraMonitoeMode(uint8_t *data, uint8_t len);
+void YuntaiYawPitch(uint8_t *data, uint8_t len);
 
 void CameraReset(void)
 {
@@ -37,21 +64,198 @@ void CameraReset(void)
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
+void CameraStop(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraFocusNear(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraFocusFar(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraPhoto(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraRecordStart(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraRecordStop(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraRecordInit(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraZoomPos(uint8_t *data, uint8_t len)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraExpCompOn(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+
+void CameraExpCompOff(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraExpCompReset(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraExpCompUp(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraExpCompDown(void)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraExpCompDirect(uint8_t *data, uint8_t len)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CameraMonitoeMode(uint8_t *data, uint8_t len)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void YuntaiYawPitch(uint8_t *data, uint8_t len)
+{
+	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+}
+
+void CANDataProcess(uint8_t *data, uint8_t len)
+{
+		if (*data == DEVICE_CAMERA)
+		{
+				switch(data[1])
+				{
+					case FUNC_CAMERA_STOP:
+						CameraStop();
+						break;
+					
+					case FUNC_CAMERA_FOCUS_NEAR:
+						CameraFocusNear();
+						break;		
+					
+					case FUNC_CAMERA_FOCUS_FAR:
+						CameraFocusFar();
+						break;	
+					
+					case FUNC_CAMERA_PHOTO:
+						CameraPhoto();
+						break;	
+					
+					case FUNC_CAMERA_RECORD_START:
+						CameraRecordStart();
+						break;	
+					
+					case FUNC_CAMERA_RECORD_STOP:
+						CameraRecordStop();
+						break;	
+					
+					case FUNC_CAMERA_INIT:
+						CameraRecordInit();
+						break;	
+					
+					case FUNC_CAMERA_ZOOM_POS:
+						CameraZoomPos(data, len);
+						break;	
+					
+					case FUNC_CAMERA_EXP_COMP_ON:
+						CameraExpCompOn();
+						break;
+					
+					case FUNC_CAMERA_EXP_COMP_OFF:
+						CameraExpCompOff();
+						break;
+					
+					case FUNC_CAMERA_EXP_COMP_RESET:
+						CameraExpCompReset();
+						break;	
+					
+					case FUNC_CAMERA_EXP_COMP_UP:
+						CameraExpCompUp();
+						break;	
+					
+					case FUNC_CAMERA_EXP_COMP_DOWN:
+						CameraExpCompDown();
+						break;	
+					
+					case FUNC_CAMERA_EXP_COMP_DIRECT:
+						CameraExpCompDirect(data, len);
+						break;
+					
+					case FUNC_CAMERA_EXP_MONITOR_MODE:
+						CameraMonitoeMode(data, len);
+						break;	
+					
+					default:
+						break;
+				}
+		}
+		else if(*data == DEVICE_YUNTAI)
+		{
+				if (data[1] == FUNC_YUNTAI_YAW_PITCH)
+				{
+						YuntaiYawPitch(data, len);
+				}
+		}
+}
+
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle)
 {
 		if(CanHandle ==&hcan)
 		{		
-			
 				if (HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
 				{
 						Error_Handler();
 				}
 				else
 				{
-						sprintf(debug_str, "HAL_CAN_RxCpltCallback ok! data:%x %x %x %x   %x %x %x %x len:%d.\n", hcan.pRxMsg->Data[0],\
-						hcan.pRxMsg->Data[1],hcan.pRxMsg->Data[2],hcan.pRxMsg->Data[3],\
-						hcan.pRxMsg->Data[4],hcan.pRxMsg->Data[5],hcan.pRxMsg->Data[6],hcan.pRxMsg->Data[7], hcan.pRxMsg->DLC);
-						DebugInfo(debug_str);
+						CANDataProcess(hcan.pRxMsg->Data, hcan.pRxMsg->DLC);
 				}
 		}
 }
@@ -82,29 +286,15 @@ void CanPreProcess(CAN_HandleTypeDef *CanHandle)
 {
 		CAN_FilterConfTypeDef  		sFilterConfig;
 
-	/*
-		uint32_t StdId =0x321;                //??????CAN ID,?????CAN ID  
-		uint32_t ExtId =0x1800f001;           //?????CAN ID  
-			
-		sFilterConfig.FilterNumber = 0;               //?????0  
-		sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;     //??????  
-		sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;    //???32??  
-		sFilterConfig.FilterIdHigh = StdId<<5;          //??ID???STID?  
-		sFilterConfig.FilterIdLow = 0|CAN_ID_STD;         //??IDE??0  
-		sFilterConfig.FilterMaskIdHigh = ((ExtId<<3)>>16)&0xffff;  
-		sFilterConfig.FilterMaskIdLow = ((ExtId<<3) & 0xffff) | CAN_ID_EXT;   //??IDE??1  
-		sFilterConfig.FilterFIFOAssignment = 0;           //?????????FIFO0?  
-		sFilterConfig.FilterActivation = ENABLE;  
-		sFilterConfig.BankNumber = 14;  
-	*/
+		uint32_t StdId =0x200; 
 	
 		sFilterConfig.FilterNumber = 0;
 		sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 		sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-		sFilterConfig.FilterIdHigh = 0x0000;
-		sFilterConfig.FilterIdLow = 0x0000;
-		sFilterConfig.FilterMaskIdHigh = 0x0000;
-		sFilterConfig.FilterMaskIdLow = 0x0000;
+		sFilterConfig.FilterIdHigh = ((((StdId <<21)&0xFFFF0000)>>16));
+		sFilterConfig.FilterIdLow = (((StdId<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xFFFF); 
+		sFilterConfig.FilterMaskIdHigh = 0xFFFF;
+		sFilterConfig.FilterMaskIdLow = 0xFFFF;
 		sFilterConfig.FilterFIFOAssignment = 0;
 		sFilterConfig.FilterActivation = ENABLE;
 		sFilterConfig.BankNumber = 14;
@@ -112,55 +302,25 @@ void CanPreProcess(CAN_HandleTypeDef *CanHandle)
 		if (HAL_CAN_ConfigFilter(CanHandle, &sFilterConfig) != HAL_OK)
 		{
 				Error_Handler();
-				DebugInfo("CanConfigFilter err!\n");
 		}
-		else
-		{
-				DebugInfo("CanConfigFilter ok!\n");
-		}	
+		
+		CanFill(&hcan);
 		
 		if (HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
 		{
 				Error_Handler();
-				DebugInfo("start CAN receive err!\n");
 		}
-		else
-		{
-				DebugInfo("start CAN receive ok!\n");
-		}		
-		
-		CanFill(&hcan);
 }
 
 void main_DTARepeater(void)
 {
-		HAL_StatusTypeDef HAL_Status;
-		
-		DebugInfo("init ok!\n");	
-		
-		CanPreProcess(&hcan);
-
-		HAL_Delay(1000);
+		HAL_Delay(3000);
 		CameraReset();
-		DebugInfo("CameraReset.\n");
 		
 		HAL_IWDG_Start(&hiwdg);
 		while (1)
 		{
 				HAL_Delay(1000);	
-				DebugInfo("loop..\n");
-				
-				HAL_Status = HAL_CAN_Transmit(&hcan, 1000);
-				if (HAL_Status != HAL_OK)
-				{
-						sprintf(debug_str, "HAL_CAN_Transmit err. err_code:%d.\n", HAL_Status);
-						DebugInfo(debug_str);
-				}
-				else
-				{
-						DebugInfo("CAN tx ok!\n");	
-				}
-				
 				HAL_IWDG_Refresh(&hiwdg);
 		}
 }

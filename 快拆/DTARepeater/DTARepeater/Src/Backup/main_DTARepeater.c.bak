@@ -41,11 +41,17 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle)
 {
 		if(CanHandle ==&hcan)
 		{		
-				DebugInfo("CAN rev Callback !\n");
-				;
+			
 				if (HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
 				{
 						Error_Handler();
+				}
+				else
+				{
+						sprintf(debug_str, "HAL_CAN_RxCpltCallback ok! data:%x %x %x %x   %x %x %x %x len:%d.\n", hcan.pRxMsg->Data[0],\
+						hcan.pRxMsg->Data[1],hcan.pRxMsg->Data[2],hcan.pRxMsg->Data[3],\
+						hcan.pRxMsg->Data[4],hcan.pRxMsg->Data[5],hcan.pRxMsg->Data[6],hcan.pRxMsg->Data[7], hcan.pRxMsg->DLC);
+						DebugInfo(debug_str);
 				}
 		}
 }

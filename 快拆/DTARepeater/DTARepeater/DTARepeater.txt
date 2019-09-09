@@ -1,6 +1,6 @@
 Configuration	DTARepeater
 STM32CubeMX 	4.21.0
-Date	08/29/2019
+Date	09/09/2019
 MCU	STM32F103C8Tx
 
 
@@ -42,7 +42,7 @@ SOFTWARE PROJECT
 
 Project Settings : 
 Project Name : DTARepeater
-Project Folder : C:\DTA Work_n0827\cube4\DTARepeater
+Project Folder : C:\DTA Work_n0827\git\¿ì²ð\DTARepeater\DTARepeater
 Toolchain / IDE : MDK-ARM V5
 Firmware Package Name and Version : STM32Cube FW_F1 V1.4.0
 

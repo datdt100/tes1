@@ -13,6 +13,11 @@
 #include "usart.h"
 #include "gpio.h"
 #include "iwdg.h"
+#include "mavlink2.h"
+#include "math.h"
+#include "modules.h"
+#include "mavlink2.h"
+#include "common/mavlink.h"
 
 /* Private variables ---------------------------------------------------------*/
 extern CAN_HandleTypeDef hcan;
@@ -20,6 +25,9 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 extern IWDG_HandleTypeDef hiwdg;
+extern void gimbal_control_standard_send(mavlink_channel_t chan, uint8_t priority, \
+	uint8_t yaw_mode, uint8_t pitch_mode, uint8_t roll_mode, \
+	float yaw_channel, float pitch_channel, float roll_channel, float drones_yawvelocity_desire);
 
 #define	DEVICE_CAMERA							1
 #define	DEVICE_YUNTAI							2
@@ -56,7 +64,12 @@ void CameraExpCompUp(void);
 void CameraExpCompDown(void);
 void CameraExpCompDirect(uint8_t *data, uint8_t len);
 void CameraMonitoeMode(uint8_t *data, uint8_t len);
+float Q12ToFloat(uint16_t in);
 void YuntaiYawPitch(uint8_t *data, uint8_t len);
+void CANDataProcess(uint8_t *data, uint8_t len);
+void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle);
+void CanFill(CAN_HandleTypeDef *CanHandle);
+void main_DTARepeater(void);
 
 void CameraReset(void)
 {
@@ -88,13 +101,11 @@ void CameraPhoto(void)
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
-
 void CameraRecordStart(void)
 {
 	uint8_t cmd[]={0xff, 0x01, 0x00, 0x07, 0x00, 0xe2, 0xea};
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
-
 
 void CameraRecordStop(void)
 {
@@ -102,13 +113,11 @@ void CameraRecordStop(void)
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
-
 void CameraRecordInit(void)
 {
 	uint8_t cmd[]={0xff, 0x01, 0x00, 0x07, 0x00, 0xdf, 0xe7};
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
-
 
 void CameraZoomPos(uint8_t *data, uint8_t len)
 {
@@ -120,13 +129,11 @@ void CameraZoomPos(uint8_t *data, uint8_t len)
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
-
 void CameraExpCompOn(void)
 {
 	uint8_t cmd[]={0xff, 0x01, 0x04, 0x3e, 0x02, 0xFF};
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
-
 
 void CameraExpCompOff(void)
 {
@@ -168,11 +175,28 @@ void CameraMonitoeMode(uint8_t *data, uint8_t len)
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
+float Q12ToFloat(uint16_t in)
+{
+	float	out;
+	
+	out = (in & 0x0fff) * (1 / 0x1000);
+	out += (in << 1) >> 13;
+	if (in >> 15)
+	{
+		out *= -1;
+	}
+	
+	return out;
+}
+
 void YuntaiYawPitch(uint8_t *data, uint8_t len)
 {
-	uint8_t cmd[]={0x81, 0x01, 0x04, 0x19, 0x03, 0xFF};
+	float yaw = Q12ToFloat(((uint16_t)data[2]) << 8 | data[3]);
+	float pitch = Q12ToFloat(((uint16_t)data[4]) << 8 | data[5]);
+	uint8_t yaw_mode = data[6] >> 4;
+	uint8_t pitch_mode = data[6] | 0x0f;
 	
-	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
+	gimbal_control_standard_send((mavlink_channel_t)0, 20, yaw_mode, pitch_mode, 4, yaw, pitch, 0.0, 0.0);
 }
 
 void CANDataProcess(uint8_t *data, uint8_t len)
@@ -323,6 +347,8 @@ void CanPreProcess(CAN_HandleTypeDef *CanHandle)
 
 void main_DTARepeater(void)
 {
+		CanPreProcess(&hcan);
+	
 		HAL_Delay(3000);
 		CameraReset();
 		

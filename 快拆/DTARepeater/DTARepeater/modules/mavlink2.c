@@ -3,7 +3,9 @@
 
 #include "common/mavlink.h"
 
-extern UART_HandleTypeDef huart1;
+#include "usart.h"
+
+extern UART_HandleTypeDef huart3;
 mavlink_message_t msg;
 mavlink_gimbal_control_standard_t cmd;
 float gain_yaw = 100/512.0f;
@@ -60,8 +62,10 @@ void send_cmd(float yaw,float pitch)
 //        _pitch = _pitch * 0.9 + (pitch - 512) * gain_pitch * 0.1;
 //    }
 
-    gimbal_control_standard_send(0, 20, 3, 3, 4, _yaw, _pitch, 0, 0);
+    gimbal_control_standard_send((mavlink_channel_t)0, (uint8_t)20, (uint8_t)3, (uint8_t)3, (uint8_t)4, (float)_yaw, (float)_pitch, (float)0, (float)0);
 }
+
+//void gimbal_control_standard_send(mavlink_channel_t chan, uint8_t priority, uint8_t yaw_mode, uint8_t pitch_mode, uint8_t roll_mode, float yaw_channel, float pitch_channel, float roll_channel, float drones_yawvelocity_desire)
 
 /**
  * @brief Finalize a MAVLink message with channel assignment and send

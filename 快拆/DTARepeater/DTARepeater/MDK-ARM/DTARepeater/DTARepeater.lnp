@@ -9,6 +9,7 @@
 "dtarepeater\usart.o"
 "dtarepeater\main_dtarepeater.o"
 "dtarepeater\iwdg.o"
+"dtarepeater\mavlink2.o"
 "dtarepeater\stm32f1xx_hal_pwr.o"
 "dtarepeater\stm32f1xx_hal_gpio.o"
 "dtarepeater\stm32f1xx_hal_can.o"

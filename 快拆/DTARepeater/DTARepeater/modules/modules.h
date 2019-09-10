@@ -15,7 +15,7 @@ typedef struct
 	uint32_t ms;
 	uint32_t us;
 }Timestamp;
-void Inc_TIM();
+void Inc_TIM(void);
 extern Ecap ecap;
 
 uint16_t Get_channel(uint16_t channel);

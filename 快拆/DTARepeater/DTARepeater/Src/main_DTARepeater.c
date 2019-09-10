@@ -29,24 +29,24 @@ extern void gimbal_control_standard_send(mavlink_channel_t chan, uint8_t priorit
 	uint8_t yaw_mode, uint8_t pitch_mode, uint8_t roll_mode, \
 	float yaw_channel, float pitch_channel, float roll_channel, float drones_yawvelocity_desire);
 
-#define	DEVICE_CAMERA							1
-#define	DEVICE_YUNTAI							2
-#define	FUNC_CAMERA_STOP					1
-#define	FUNC_CAMERA_FOCUS_NEAR		2
+#define	DEVICE_CAMERA				1
+#define	DEVICE_YUNTAI				2
+#define	FUNC_CAMERA_STOP				1
+#define	FUNC_CAMERA_FOCUS_NEAR			2
 #define	FUNC_CAMERA_FOCUS_FAR			3
-#define	FUNC_CAMERA_PHOTO					4
-#define	FUNC_CAMERA_RECORD_START	5
-#define	FUNC_CAMERA_RECORD_STOP		6
-#define	FUNC_CAMERA_INIT					7
-#define	FUNC_CAMERA_ZOOM_POS					0x10
-#define	FUNC_CAMERA_EXP_COMP_ON				0x20
-#define	FUNC_CAMERA_EXP_COMP_OFF			0x21
+#define	FUNC_CAMERA_PHOTO				4
+#define	FUNC_CAMERA_RECORD_START		5
+#define	FUNC_CAMERA_RECORD_STOP			6
+#define	FUNC_CAMERA_INIT				7
+#define	FUNC_CAMERA_ZOOM_POS			0x10
+#define	FUNC_CAMERA_EXP_COMP_ON			0x20
+#define	FUNC_CAMERA_EXP_COMP_OFF		0x21
 #define	FUNC_CAMERA_EXP_COMP_RESET		0x22
-#define	FUNC_CAMERA_EXP_COMP_UP				0x23
-#define	FUNC_CAMERA_EXP_COMP_DOWN			0x24
+#define	FUNC_CAMERA_EXP_COMP_UP			0x23
+#define	FUNC_CAMERA_EXP_COMP_DOWN		0x24
 #define	FUNC_CAMERA_EXP_COMP_DIRECT		0x25
 #define	FUNC_CAMERA_EXP_MONITOR_MODE	0x30		//etc. 1080p/60...
-#define	FUNC_YUNTAI_YAW_PITCH					1
+#define	FUNC_YUNTAI_YAW_PITCH		1
 
 void CameraReset(void);
 void CameraStop(void);
@@ -70,6 +70,8 @@ void CANDataProcess(uint8_t *data, uint8_t len);
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle);
 void CanFill(CAN_HandleTypeDef *CanHandle);
 void main_DTARepeater(void);
+
+uint8_t CANDebug_flag = 0;
 
 void CameraReset(void)
 {
@@ -125,7 +127,7 @@ void CameraZoomPos(uint8_t *data, uint8_t len)
 	cmd[4] = data[2] >> 4;
 	cmd[5] = data[2] & 0x0f;
 	cmd[6] = data[3] >> 4;
-	cmd[7] = data[4] & 0x0f;	
+	cmd[7] = data[3] & 0x0f;	
 	HAL_UART_Transmit(&huart2, cmd, sizeof(cmd), 1000);
 }
 
@@ -194,7 +196,7 @@ void YuntaiYawPitch(uint8_t *data, uint8_t len)
 	float yaw = Q12ToFloat(((uint16_t)data[2]) << 8 | data[3]);
 	float pitch = Q12ToFloat(((uint16_t)data[4]) << 8 | data[5]);
 	uint8_t yaw_mode = data[6] >> 4;
-	uint8_t pitch_mode = data[6] | 0x0f;
+	uint8_t pitch_mode = data[6] & 0x0f;
 	
 	gimbal_control_standard_send((mavlink_channel_t)0, 20, yaw_mode, pitch_mode, 4, yaw, pitch, 0.0, 0.0);
 }
@@ -276,19 +278,26 @@ void CANDataProcess(uint8_t *data, uint8_t len)
 						YuntaiYawPitch(data, len);
 				}
 		}
+		else if ((data[0] == 0xab) && (data[1] == 0xcd))
+		{
+			CANDebug_flag = 1;
+			CameraReset();
+		}
+		else if ((data[0] == 0xcd) && (data[1] == 0xab))
+		{
+			CANDebug_flag = 0;
+		}		
 }
 
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef *CanHandle)
 {
 		if(CanHandle ==&hcan)
 		{		
+				CANDataProcess(hcan.pRxMsg->Data, hcan.pRxMsg->DLC);
+
 				if (HAL_CAN_Receive_IT(&hcan, CAN_FIFO0) != HAL_OK)
 				{
 						Error_Handler();
-				}
-				else
-				{
-						CANDataProcess(hcan.pRxMsg->Data, hcan.pRxMsg->DLC);
 				}
 		}
 }
@@ -300,7 +309,7 @@ void CanFill(CAN_HandleTypeDef *CanHandle)
 
 		CanHandle->pTxMsg = &TxMessage;
 		CanHandle->pRxMsg = &RxMessage;
-		CanHandle->pTxMsg->StdId = 0x321;
+		CanHandle->pTxMsg->StdId = 0x201;
 		CanHandle->pTxMsg->ExtId = 0x01;
 		CanHandle->pTxMsg->RTR = CAN_RTR_DATA;
 		CanHandle->pTxMsg->IDE = CAN_ID_STD;

@@ -13,7 +13,7 @@ float gain_pitch = 100 / 512.0f;
 float max_pitch = 15 * 90 / 512.0f;
 
 #define MAVLINK_SEPARATE_HELPERS
-#define MAVLINK_SEND_UART_BYTES(chan, buf, len) HAL_UART_Transmit(&huart1,buf,len,1000);
+#define MAVLINK_SEND_UART_BYTES(chan, buf, len) HAL_UART_Transmit(&huart3,buf,len,1000);
 //#define MAVLINK_SEND_UART_BYTES(chan, buf, len) Sent_uart1((uint8_t * )buf, len);
 #define MAVLINK_MAX_PAYLOAD_LEN 255
 void gimbal_control_standard_send(mavlink_channel_t chan, uint8_t priority, uint8_t yaw_mode, uint8_t pitch_mode, uint8_t roll_mode, float yaw_channel, float pitch_channel, float roll_channel, float drones_yawvelocity_desire);

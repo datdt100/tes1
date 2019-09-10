@@ -156,6 +156,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+#include "string.h"
 
 /** @addtogroup STM32F1xx_HAL_Driver
   * @{
@@ -240,6 +241,8 @@ static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef *huart, 
     |    1    |    1      |    | SB | 8 bit data | PB | STB |     |
     +-------------------------------------------------------------+
 */
+
+extern CAN_HandleTypeDef hcan;
 
 /**
   * @brief  Initializes the UART mode according to the specified parameters in
@@ -630,11 +633,23 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
   * @param  Timeout: Timeout duration  
   * @retval HAL status
   */
+extern uint8_t CANDebug_flag;
+
 HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
   uint16_t* tmp;
   uint32_t tmp_state = 0;
-  
+
+  if (CANDebug_flag)
+  {	
+    for (uint8_t i = 0; ((Size - i*8) > 0); i++)
+    {
+      hcan.pTxMsg->DLC = ((Size - i*8) >= 8) ? 8 : (Size - i*8);
+      memcpy(hcan.pTxMsg->Data, (pData + i*8), hcan.pTxMsg->DLC);
+      HAL_CAN_Transmit(&hcan, 1000);
+    }
+  }
+
   tmp_state = huart->State;
   if((tmp_state == HAL_UART_STATE_READY) || (tmp_state == HAL_UART_STATE_BUSY_RX))
   {
